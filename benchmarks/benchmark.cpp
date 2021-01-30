@@ -7,6 +7,8 @@
 #include "double-conversion/ieee.h"
 #include "double-conversion/double-conversion.h"
 
+#include "boost/spirit/include/qi.hpp"
+
 #define IEEE_8087
 #include "cxxopts.hpp"
 #ifdef __linux__
@@ -31,6 +33,7 @@
 #include <stdio.h>
 #include <vector>
 #include <locale.h>
+
 
 #include "random_generators.h"
 
@@ -137,6 +140,34 @@ double findmax_fastfloat(std::vector<std::string> &s) {
   }
   return answer;
 }
+
+double findmax_fastfloat_fixed(std::vector<std::string> &s) {
+  double answer = 0;
+  double x = 0;
+  for (std::string &st : s) {
+    auto [p, ec] = fast_float::from_chars(st.data(), st.data() + st.size(), x, fast_float::fixed);
+    if (p == st.data()) {
+      throw std::runtime_error("bug in findmax_fastfloat");
+    }
+    answer = answer > x ? answer : x;
+  }
+  return answer;
+}
+
+double findmax_boostsprit(std::vector<std::string> &s) {
+  double answer = 0;
+  double x = 0;
+  for (std::string &st : s) {
+    auto p = st.data();
+    auto result = boost::spirit::qi::parse(p, st.data() + st.size(), x);
+    if (not result || p != st.data() + st.size()) {
+      throw std::runtime_error("bug in findmax_boostsprit");
+    }
+    answer = answer > x ? answer : x;
+  }
+  return answer;
+}
+
 
 namespace fast_float {
 // This function sidesteps the computation of the
@@ -309,12 +340,14 @@ void process(std::vector<std::string> &lines, size_t volume) {
   size_t repeat = 100;
   double volumeMB = volume / (1024. * 1024.);
   std::cout << "volume = " << volumeMB << " MB " << std::endl;
+  pretty_print(volume, lines.size(), "fastfloat (fake)", time_it_ns(lines, findmax_fastfloat_fake, repeat));
   pretty_print(volume, lines.size(), "netlib", time_it_ns(lines, findmax_netlib, repeat));
   pretty_print(volume, lines.size(), "doubleconversion", time_it_ns(lines, findmax_doubleconversion, repeat));
   pretty_print(volume, lines.size(), "strtod", time_it_ns(lines, findmax_strtod, repeat));
   pretty_print(volume, lines.size(), "abseil", time_it_ns(lines, findmax_absl_from_chars, repeat));
+  pretty_print(volume, lines.size(), "boost sprit qi", time_it_ns(lines, findmax_boostsprit, repeat));
   pretty_print(volume, lines.size(), "fastfloat", time_it_ns(lines, findmax_fastfloat, repeat));
-  pretty_print(volume, lines.size(), "fastfloat (fake)", time_it_ns(lines, findmax_fastfloat_fake, repeat));
+  pretty_print(volume, lines.size(), "fastfloat fixed", time_it_ns(lines, findmax_fastfloat_fixed, repeat));
 #ifdef FROM_CHARS_AVAILABLE_MAYBE
   pretty_print(volume, lines.size(), "from_chars", time_it_ns(lines, findmax_from_chars, repeat));
 #endif

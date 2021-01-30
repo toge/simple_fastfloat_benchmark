@@ -44,5 +44,11 @@ FetchContent_GetProperties(doubleconversion)
 FetchContent_MakeAvailable(doubleconversion)
 
 
+FetchContent_Declare(boost
+    URL https://dl.bintray.com/boostorg/release/1.75.0/source/boost_1_75_0.tar.gz)
+FetchContent_GetProperties(boost)
+FetchContent_MakeAvailable(boost)
+
+include_directories(${boost_SOURCE_DIR})
 
 add_subdirectory(benchmarks)
