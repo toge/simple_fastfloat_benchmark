@@ -51,4 +51,12 @@ FetchContent_MakeAvailable(boost)
 
 include_directories(${boost_SOURCE_DIR})
 
+FetchContent_Declare(ssp
+    GIT_REPOSITORY https://github.com/red0124/ssp.git
+)
+FetchContent_GetProperties(ssp)
+FetchContent_MakeAvailable(ssp)
+
+include_directories(${ssp_SOURCE_DIR}/include)
+
 add_subdirectory(benchmarks)

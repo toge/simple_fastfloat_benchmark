@@ -9,6 +9,8 @@
 
 #include "boost/spirit/include/qi.hpp"
 
+#include "ss/extract.hpp"
+
 #define IEEE_8087
 #include "cxxopts.hpp"
 #ifdef __linux__
@@ -211,7 +213,6 @@ double findmax_fastfloat_fake(std::vector<std::string> &s) {
   return answer;
 }
 
-
 double findmax_absl_from_chars(std::vector<std::string> &s) {
   double answer = 0;
   double x = 0;
@@ -224,6 +225,23 @@ double findmax_absl_from_chars(std::vector<std::string> &s) {
   }
   return answer;
 }
+
+double findmax_ssp_to_num(std::vector<std::string> &s) {
+  double answer = 0;
+  double x = 0;
+  for (std::string &st : s) {
+    auto p = st.data();
+    auto rlt = ss::to_num<double>(p, p + st.size());
+    // if (not rlt || p != st.data() + st.size()) {
+    if (not rlt) {
+      throw std::runtime_error("bug in findmax_ssp_to_num");
+    }
+    x = *rlt;
+    answer = answer > x ? answer : x;
+  }
+  return answer;
+}
+
 #ifdef __linux__
 template <class T>
 std::vector<event_count> time_it_ns(std::vector<std::string> &lines,
@@ -346,6 +364,7 @@ void process(std::vector<std::string> &lines, size_t volume) {
   pretty_print(volume, lines.size(), "strtod", time_it_ns(lines, findmax_strtod, repeat));
   pretty_print(volume, lines.size(), "abseil", time_it_ns(lines, findmax_absl_from_chars, repeat));
   pretty_print(volume, lines.size(), "boost sprit qi", time_it_ns(lines, findmax_boostsprit, repeat));
+  pretty_print(volume, lines.size(), "ssp to_num", time_it_ns(lines, findmax_ssp_to_num, repeat));
   pretty_print(volume, lines.size(), "fastfloat", time_it_ns(lines, findmax_fastfloat, repeat));
   pretty_print(volume, lines.size(), "fastfloat fixed", time_it_ns(lines, findmax_fastfloat_fixed, repeat));
 #ifdef FROM_CHARS_AVAILABLE_MAYBE
