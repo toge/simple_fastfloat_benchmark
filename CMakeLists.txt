@@ -31,7 +31,7 @@ endif()
 
 FetchContent_Declare(
   fast_float
-  GIT_REPOSITORY https://github.com/lemire/fast_float.git
+  GIT_REPOSITORY https://github.com/fastfloat/fast_float.git
   GIT_TAG origin/main
   GIT_SHALLOW TRUE)
 
@@ -52,7 +52,7 @@ FetchContent_MakeAvailable(boost)
 include_directories(${boost_SOURCE_DIR})
 
 FetchContent_Declare(ssp
-    GIT_REPOSITORY https://github.com/red0124/ssp.git
+    GIT_REPOSITORY https://github.com/toge/ssp.git
 )
 FetchContent_GetProperties(ssp)
 FetchContent_MakeAvailable(ssp)
