@@ -179,9 +179,8 @@ from_chars_result from_chars_fake(const char *first, const char *last,
                              T &value, chars_format fmt = chars_format::general)  noexcept  {
   static_assert (std::is_same<T, double>::value || std::is_same<T, float>::value, "only float and double are supported");
 
-
   from_chars_result answer;
-  while ((first != last) && fast_float::is_space(uint8_t(*first))) {
+  while ((first != last) && std::isspace(uint8_t(*first))) {
     first++;
   }
   if (first == last) {
