@@ -111,9 +111,6 @@ double findmax_strtod(std::vector<std::string> &s) {
   }
   return answer;
 }
-#if defined(_MSC_VER)
-#define FROM_CHARS_AVAILABLE_MAYBE
-#endif
 
 #ifdef FROM_CHARS_AVAILABLE_MAYBE
 double findmax_from_chars(std::vector<std::string> &s) {

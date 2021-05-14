@@ -14,10 +14,9 @@ set(ABSL_ENABLE_INSTALL ON)
 set(ABSL_RUN_TEST OFF CACHE INTERNAL "")
 set(ABSL_USE_GOOGLETEST_HEAD OFF CACHE INTERNAL "")
 
-
 FetchContent_Declare(abseil 
      GIT_REPOSITORY https://github.com/abseil/abseil-cpp.git 
-     GIT_TAG "20200225.2")
+     GIT_TAG "20210324.1")
 FetchContent_GetProperties(abseil)
 if(NOT abseil_POPULATED)
     set(BUILD_TESTING OFF)
@@ -26,8 +25,6 @@ if(NOT abseil_POPULATED)
     set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${abseil_SOURCE_DIR}/absl/copts)
     include(${abseil_SOURCE_DIR}/absl/copts/AbseilConfigureCopts.cmake)
 endif()
-
-
 
 FetchContent_Declare(
   fast_float
@@ -45,7 +42,7 @@ FetchContent_MakeAvailable(doubleconversion)
 
 
 FetchContent_Declare(boost
-    URL https://dl.bintray.com/boostorg/release/1.75.0/source/boost_1_75_0.tar.gz)
+    URL https://boostorg.jfrog.io/artifactory/main/release/1.76.0/source/boost_1_76_0.tar.gz)
 FetchContent_GetProperties(boost)
 FetchContent_MakeAvailable(boost)
 
@@ -58,5 +55,9 @@ FetchContent_GetProperties(ssp)
 FetchContent_MakeAvailable(ssp)
 
 include_directories(${ssp_SOURCE_DIR}/include)
+
+if (MSVC OR FROM_CHARS)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DFROM_CHARS_AVAILABLE_MAYBE")
+endif()
 
 add_subdirectory(benchmarks)
